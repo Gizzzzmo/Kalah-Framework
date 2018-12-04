@@ -47,9 +47,11 @@ final case class HumanPlayer(val name : String) extends Agent {
   val students = List("Dennis").asJava
   private var currentboard : Board = null
   private var playerone = None.asInstanceOf[Option[Boolean]]
+  private var houses = 0
 
   def init(board : Board, playerOne : Boolean): Unit = {
     currentboard = board
+    houses = currentboard.houses
     playerone = Some(playerOne)
     println(board.getMoves)
     println("Initializing for " + name)
@@ -59,14 +61,36 @@ final case class HumanPlayer(val name : String) extends Agent {
   def move : Int = {
     println("Your move, " + name)
     println(currentboard.asString(this))
-    println(currentboard.getMoves.asScala.toList)
-    println(currentboard.getState._1.asScala.toList)
+    val (pl1, pl2, m1, m2) = currentboard.getState
+    val state1 = pl1.asScala.toList:+m1
+    val state2 = pl2.asScala.toList:+m2
     println(getMoves)
     print("Enter house: ")
-    scala.io.StdIn.readInt
+    val move = scala.io.StdIn.readInt
+    val ((nextState1, nextState2), again) = nextState(state1, state2)(move-1)
+    println(nextState2)
+    println(nextState1)
+    println(again)
+    move
   }
-  def getMoves = {
-    (1 to currentboard.houses).toList.filter((e:Int) => currentboard.getHouses.asScala.toList(e-1) != 0)
+
+  def nextState: (List[Int], List[Int]) => Int => ((List[Int], List[Int]), Boolean) = (state1, state2) => move => {
+    val nextState = (state1++state2).toArray
+    nextState(move) = 0
+    var finalCell = move+state1(move)
+    for(i <- move+1 to finalCell){
+      nextState(i%(nextState.length-1)) += 1// + nextState(i%(nextState.length-1))
+    }
+    finalCell %= nextState.length-1
+    if(finalCell < houses && nextState(finalCell) == 1){
+      nextState(houses) += 1 + nextState(2*houses-finalCell)
+      nextState(finalCell) = 0
+      nextState(2*houses-finalCell) = 0
+    }
+    (nextState.toList.splitAt(houses+1), finalCell == houses)
+  }
+  def getMoves: List[Int] => List[Int] = state => {
+    (0 to houses-1).toList.filter(state(_) != 0)
   }
 }
 

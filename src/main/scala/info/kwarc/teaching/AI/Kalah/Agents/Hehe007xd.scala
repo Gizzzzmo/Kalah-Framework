@@ -37,13 +37,20 @@ class Hehe007xd extends Agent{
   }
 
   def nextState: (List[Int], List[Int]) => Int => ((List[Int], List[Int]), Boolean) = (state1, state2) => move => {
-    var nextState = (state1++state2).toArray
-    for(i <- move+1 to move+state1(move)+1){
+    val nextState = (state1++state2).toArray
+    nextState(move) = 0
+    var finalCell = move+state1(move)
+    for(i <- move+1 to finalCell){
       nextState(i%(nextState.length-1)) += 1// + nextState(i%(nextState.length-1))
     }
-    (nextState.toList.splitAt(houses+1), (move+state1(move))%(nextState.length-1) == houses)
+    finalCell %= nextState.length-1
+    if(finalCell < houses && nextState(finalCell) == 1){
+      nextState(houses) += 1 + nextState(2*houses-finalCell)
+      nextState(finalCell) = 0
+      nextState(2*houses-finalCell) = 0
+    }
+    (nextState.toList.splitAt(houses+1), finalCell == houses)
   }
-
   def getMoves: List[Int] => List[Int] = state => {
     (0 to houses-1).toList.filter(state(_) != 0)
   }

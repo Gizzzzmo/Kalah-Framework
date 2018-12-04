@@ -37,11 +37,11 @@ class Hehe007xd extends Agent{
   }
 
   def nextState: (List[Int], List[Int]) => Int => ((List[Int], List[Int]), Boolean) = (state1, state2) => move => {
-    var nextState = state1++state2
+    var nextState = (state1++state2).toArray
     for(i <- move+1 to move+state1(move)+1){
-      nextState(i%(nextState.length-1)) += 1
+      nextState(i%(nextState.length-1)) += 1// + nextState(i%(nextState.length-1))
     }
-    (nextState.splitAt(houses+1), (move+state1(move))%(nextState.length-1) == houses)
+    (nextState.toList.splitAt(houses+1), (move+state1(move))%(nextState.length-1) == houses)
   }
 
   def getMoves: List[Int] => List[Int] = state => {

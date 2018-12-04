@@ -32,7 +32,8 @@ class Hehe007xd extends Agent{
     */
   override def move: Int = {
     val (pl1, pl2, m1, m2) = currentboard.getState
-    val state = (pl1.asScala.toList:+m1)++pl2.asScala.toList:+m2
+    val state1 = pl1.asScala.toList:+m1
+    val state2 = pl2.asScala.toList:+m2
     return 0
   }
 
@@ -51,6 +52,7 @@ class Hehe007xd extends Agent{
     }
     (nextState.toList.splitAt(houses+1), finalCell == houses)
   }
+
   def getMoves: List[Int] => List[Int] = state => {
     (0 to houses-1).toList.filter(state(_) != 0)
   }

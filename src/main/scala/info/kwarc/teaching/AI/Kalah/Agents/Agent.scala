@@ -51,6 +51,7 @@ final case class HumanPlayer(val name : String) extends Agent {
   def init(board : Board, playerOne : Boolean): Unit = {
     currentboard = board
     playerone = Some(playerOne)
+    println(board.getMoves)
     println("Initializing for " + name)
     println("Playing Kalah(" + board.houses + "," + board.initSeeds + ")")
   }
@@ -58,8 +59,14 @@ final case class HumanPlayer(val name : String) extends Agent {
   def move : Int = {
     println("Your move, " + name)
     println(currentboard.asString(this))
+    println(currentboard.getMoves.asScala.toList)
+    println(currentboard.getState._1.asScala.toList)
+    println(getMoves)
     print("Enter house: ")
     scala.io.StdIn.readInt
+  }
+  def getMoves = {
+    (1 to currentboard.houses).toList.filter((e:Int) => currentboard.getHouses.asScala.toList(e-1) != 0)
   }
 }
 
